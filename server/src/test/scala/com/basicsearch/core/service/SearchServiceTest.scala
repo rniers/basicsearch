@@ -40,7 +40,5 @@ class SearchServiceTest extends FlatSpec with Matchers {
     val keys: Set[String] = service.search("document")
     keys should contain allElementsOf Set("key")
   }
-
-
   // todo: remote service test
 }

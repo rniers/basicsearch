@@ -24,9 +24,13 @@ object SearchModule extends TwitterModule {
   @Singleton
   @Provides
   def searchService: SearchService[Future, TextDocument] = {
-    role get match {
+    role.get match {
       case Some("master") =>
-        val hosts = shards().split(",").toSeq
+        val hosts = shards.get match {
+          case Some(s) => s.split(",").toSeq
+          case None =>
+            throw new IllegalStateException("No shards specified for master.")
+        }
         new RemoteSearchService(hosts.map(host => FinagleRestClient(host)))
       case _ => new LocalSearchService
     }

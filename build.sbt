@@ -9,6 +9,11 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots")
   ),
+  test in assembly := {},
+  assemblyMergeStrategy in assembly := {
+    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+    case x => MergeStrategy.first
+  }
 ) ++ scalafmtSettings
 
 lazy val versions = new {
@@ -67,7 +72,7 @@ lazy val server = (project in file("server"))
 
 lazy val root = project.in(file("."))
   .settings(
-    publishArtifact := false
+    publishArtifact := false,
   )
   .aggregate(
     client,
