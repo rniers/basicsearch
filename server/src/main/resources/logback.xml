@@ -8,7 +8,7 @@
 
     <logger name="com.twitter" level="warn"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

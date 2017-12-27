@@ -11,27 +11,28 @@ import com.basicsearch.core.service.{
 }
 import com.google.inject.Provides
 import com.twitter.inject.TwitterModule
+import com.twitter.inject.annotations.Flag
 import com.twitter.util.Future
 
 object SearchModule extends TwitterModule {
 
-  protected lazy val role =
-    flag(name = "role", default = "shard", help = "Role of the current server")
+  flag(name = "role", default = "shard", help = "Role of the current server")
 
-  protected lazy val shards =
+  val shards =
     flag[String](name = "shards", help = "Hostnames of all shards")
 
   @Singleton
   @Provides
-  def searchService: SearchService[Future, TextDocument] = {
-    role.get match {
-      case Some("master") =>
+  def searchService(
+      @Flag("role") role: String): SearchService[Future, TextDocument] = {
+    role match {
+      case "master" =>
         val hosts = shards.get match {
           case Some(s) => s.split(",").toSeq
           case None =>
             throw new IllegalStateException("No shards specified for master.")
         }
-        new RemoteSearchService(hosts.map(host => FinagleRestClient(host)))
+        new RemoteSearchService(hosts.map(FinagleRestClient.apply))
       case _ => new LocalSearchService
     }
 

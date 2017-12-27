@@ -29,7 +29,7 @@ Run tests agains all projects:
 
 ## Build
 
-Assemble fat jars with for client and server:
+Assemble fat jars for client and server:
 
 ```bash
     sbt assembly

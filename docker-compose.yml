@@ -1,0 +1,30 @@
+version: '3'
+services:
+
+  master:
+    container_name: basicsearch_master
+    image: basicsearch_server:0.1.0
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+    environment:
+      - ROLE=master
+      - SHARDS=localhost:8081,localhost:8082
+    ports:
+     - "8080:8888"
+
+  shard_1:
+    container_name: basicsearch_shard_1
+    image: basicsearch_server:0.1.0
+    ports:
+     - "8081:8888"
+    depends_on:
+      - master
+
+  shard_2:
+    container_name: basicsearch_shard_2
+    image: basicsearch_server:0.1.0
+    ports:
+      - "8082:8888"
+    depends_on:
+      - master

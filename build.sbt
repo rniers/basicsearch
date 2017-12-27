@@ -1,3 +1,5 @@
+import com.typesafe.sbt.SbtGit.git._
+
 
 lazy val commonSettings = Seq(
   organization := "com.basicsearch",
@@ -16,6 +18,23 @@ lazy val commonSettings = Seq(
   }
 ) ++ scalafmtSettings
 
+lazy val scalafmtSettings = Seq(
+  scalafmtOnCompile := true,
+  scalafmtTestOnCompile := true
+)
+
+lazy val buildInfoSettings = Seq(
+  buildInfoPackage := "version",
+  buildInfoKeys := IndexedSeq[BuildInfoKey](
+    name, version, gitHeadCommit, gitHeadCommitDate, gitCurrentBranch, gitCurrentTags
+  ),
+  buildInfoOptions ++= Seq(
+    BuildInfoOption.ToMap,
+    BuildInfoOption.ToJson,
+    BuildInfoOption.BuildTime
+  )
+)
+
 lazy val versions = new {
   val finatra = "17.11.0"
   val guice = "4.1.0"
@@ -28,10 +47,6 @@ lazy val versions = new {
   val scalacheck = "1.13.4"
 }
 
-lazy val scalafmtSettings = Seq(
-  scalafmtOnCompile := true,
-  scalafmtTestOnCompile := true
-)
 
 lazy val client = (project in file("client"))
   .settings(
@@ -43,8 +58,10 @@ lazy val client = (project in file("client"))
   )
 
 lazy val server = (project in file("server"))
+  .enablePlugins(BuildInfoPlugin)
   .settings(
     commonSettings,
+    buildInfoSettings,
     name := "server",
     libraryDependencies ++= commonDependencies ++ Seq(
       "org.typelevel" %% "cats-core" % versions.cats,
@@ -72,6 +89,7 @@ lazy val server = (project in file("server"))
 
 lazy val root = project.in(file("."))
   .settings(
+    assembleArtifact := false,
     publishArtifact := false,
   )
   .aggregate(
