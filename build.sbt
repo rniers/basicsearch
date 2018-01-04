@@ -87,7 +87,7 @@ lazy val server = (project in file("server"))
   )
   .dependsOn(client)
 
-lazy val root = project.in(file("."))
+lazy val basicsearch = project.in(file("."))
   .settings(
     assembleArtifact := false,
     publishArtifact := false,
